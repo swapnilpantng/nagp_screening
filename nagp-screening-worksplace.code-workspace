@@ -11,6 +11,12 @@
 		},
 		{
 			"path": "urban-eurekaserver"
+		},
+		{
+			"path": "urban-admin"
 		}
-	]
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "interactive"
+	}
 }

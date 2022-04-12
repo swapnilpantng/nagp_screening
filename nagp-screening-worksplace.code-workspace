@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "urban-apigateway"
+		},
+		{
+			"path": "urban-contact"
+		},
+		{
+			"path": "urban-customer"
+		},
+		{
+			"path": "urban-eurekaserver"
+		}
+	]
+}

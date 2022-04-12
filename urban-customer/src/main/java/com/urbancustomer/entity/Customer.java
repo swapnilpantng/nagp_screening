@@ -12,13 +12,15 @@ public class Customer {
 
 
     List<Address> addresses = new ArrayList<>();
+    List<Order> orders = new ArrayList<>();
 
-    public Customer(Integer customerId, String name, String phone, String email, List<Address> addresses) {
+    public Customer(Integer customerId, String name, String phone, String email, List<Address> addresses, List<Order> orders) {
         this.customerId = customerId;
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.addresses = addresses;
+        this.orders = orders;
     }
 
     public Customer(Integer customerId, String name, String phone, String email) {
@@ -55,12 +57,20 @@ public class Customer {
         this.phone = phone;
     }
 
-    public List<Address> getContacts() {
+    public List<Address> getAddresses() {
         return addresses;
     }
 
-    public void setContacts(List<Address> addresses) {
+    public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     public String getEmail() {

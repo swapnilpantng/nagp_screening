@@ -29,7 +29,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public Customer getCustomer(Integer id) {
-        return this.list.stream().filter(user->user.getCustomerId().equals(id)).findAny().orElse(null);
+        return this.list.stream().filter(user->user.getCustomerId().equals(id)).findAny().orElse(new Customer());
     }
 
     @Override

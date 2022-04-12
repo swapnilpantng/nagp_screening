@@ -1,6 +1,7 @@
 package com.urbancustomer.controller;
 
 import com.urbancustomer.entity.Customer;
+import com.urbancustomer.entity.Order;
 import com.urbancustomer.service.CustomerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,11 @@ public class CustomerController {
     @GetMapping("/{customerId}")
     public Customer getCustomer(@PathVariable("customerId") Integer customerId) {
         Customer customer = this.customerService.getCustomer(customerId);
-//        List contacts = this.restTemplate.getForObject("http://contact-service/contact/customer/" + customer.getCustomerId(),List.class);
-        customer.setContacts(this.customerService.getCustomerAddress(customerId));
+        if(customer.getCustomerId() != null){
+            List<Order> orders = this.restTemplate.getForObject("http://admin-service/order/customer/" + customer.getCustomerId(),List.class);
+            customer.setOrders(orders);
+            customer.setAddresses(this.customerService.getCustomerAddress(customerId));
+        }
         return customer;
     }
 }

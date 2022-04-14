@@ -1,9 +1,10 @@
 package com.provider.urbanprovider.controller;
 
-import com.provider.urbanprovider.enity.Provider;
+import com.provider.urbanprovider.enity.*;
 import com.provider.urbanprovider.service.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -13,6 +14,9 @@ public class ProviderController {
 
     @Autowired
     private ProviderService providerService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping("/{providerId}")
     public Provider getProvider(@PathVariable("providerId") Integer providerId){
@@ -27,5 +31,25 @@ public class ProviderController {
     @RequestMapping(method = RequestMethod.PUT, value = "/{providerId}")
     public Provider updateProviderStatus(@PathVariable("providerId") Integer providerId, @RequestBody Provider provider){
         return this.providerService.updateProvider(providerId, provider.getStatus());
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/acceptDeny/{orderId}/{providerId}")
+    public ProviderResponse acceptDenyProviderStatus(@PathVariable("orderId") Integer orderId, @PathVariable("providerId") Integer providerId, @RequestBody JsonRequest request){
+        if (request.getRequest().equals("accept")){
+            this.providerService.updateProvider(providerId, "not available");
+            Order order = this.restTemplate.getForObject("http://admin-service/order/" + orderId, Order.class);
+            Customer customerDetails = this.restTemplate.getForObject("http://customer-service/customer/forProvider/" + order.getCustomerId(), Customer.class);
+            ProviderResponse response =  new ProviderResponse();
+            response.setEmail(customerDetails.getEmail());
+            response.setName(customerDetails.getName());
+            response.setPhone(customerDetails.getPhone());
+            response.setCurrentAdddress(customerDetails.getCurrentAdddress());
+            return response;
+        }
+        if (request.getRequest().equals("deny")){
+            this.providerService.updateProvider(providerId, "available");
+            return null;
+        }
+        return null;
     }
 }

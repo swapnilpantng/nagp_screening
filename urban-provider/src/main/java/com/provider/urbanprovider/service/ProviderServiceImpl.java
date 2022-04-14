@@ -33,6 +33,8 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public List<Provider> getProvidersByLocation(Integer locationCode) {
-        return this.list.stream().filter(provider -> provider.getLocationCode().equals(locationCode)).collect(Collectors.toList());
+        return this.list.stream().
+                filter(provider -> provider.getLocationCode().equals(locationCode) && provider.getStatus().equals("available"))
+                .collect(Collectors.toList());
     }
 }

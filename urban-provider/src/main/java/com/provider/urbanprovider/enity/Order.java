@@ -1,6 +1,7 @@
-package com.admin.urbanadmin.entity;
+package com.provider.urbanprovider.enity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;

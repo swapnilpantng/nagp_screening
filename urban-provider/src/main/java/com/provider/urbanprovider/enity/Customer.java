@@ -1,4 +1,4 @@
-package com.urbancustomer.entity;
+package com.provider.urbanprovider.enity;
 
 import java.util.ArrayList;
 import java.util.List;

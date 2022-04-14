@@ -4,42 +4,51 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration("customer")
 public class MQConfig {
-    public static final String QUEUE = "message_queue";
-    public static final String CUSTOMER_QUEUE = "message_queue_customer";
+    public static final String QUEUE_CUSTOMER = "message_queue_customer";
+    public static final String QUEUE_PROVIDER = "message_queue_provider";
     public static final String EXCHANGE = "message_exchange";
-    public static final String ROUTING_KEY = "message_routingKey";
 
     @Bean
-    public Queue queue(){
-        return new Queue(QUEUE);
+    public Queue queueCustomer() {
+        return new Queue(QUEUE_CUSTOMER );
     }
 
     @Bean
-    public TopicExchange exchange(){
+    public Queue queueProvider() {
+        return new Queue(QUEUE_PROVIDER);
+    }
+
+    @Bean
+    public TopicExchange exchange() {
         return new TopicExchange(EXCHANGE);
     }
 
     @Bean
-    public Binding binding(Queue queue, TopicExchange exchange){
-        return BindingBuilder.bind(queue).to(exchange).with(ROUTING_KEY);
+    public Binding bindingCustomer(@Qualifier("queueCustomer") Queue queue, TopicExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with(QUEUE_CUSTOMER);
     }
 
     @Bean
-    public MessageConverter messageConverter(){
+    public Binding bindingProvider(@Qualifier("queueProvider") Queue queue, TopicExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with(QUEUE_PROVIDER);
+    }
+
+    @Bean
+    public MessageConverter messageConverterCustomer() {
         return new Jackson2JsonMessageConverter();
     }
 
     @Bean
-    public AmqpTemplate template(ConnectionFactory connectionFactory){
+    public AmqpTemplate templateCustomer(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate((connectionFactory));
-        template.setMessageConverter(messageConverter());
+        template.setMessageConverter(messageConverterCustomer());
         return template;
     }
 }

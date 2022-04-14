@@ -1,10 +1,7 @@
 package com.admin.urbanadmin.controller;
 
 import com.admin.urbanadmin.config.MQConfig;
-import com.admin.urbanadmin.entity.CustomMessage;
-import com.admin.urbanadmin.entity.JsonRequest;
-import com.admin.urbanadmin.entity.Order;
-import com.admin.urbanadmin.entity.Provider;
+import com.admin.urbanadmin.entity.*;
 import com.admin.urbanadmin.service.OrderService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +25,10 @@ public class OrderController {
     private RestTemplate restTemplate;
 
     @Autowired
-    private RabbitTemplate template;
+    private RabbitTemplate templateProvider;
+
+    @Autowired
+    private RabbitTemplate templateCustomer;
 
     @GetMapping("/order/{orderId}")
     public Order getOrder(@PathVariable("orderId") Integer orderId) {
@@ -56,7 +56,20 @@ public class OrderController {
             return this.orderService.updateOrder(orderId, payload.getStatus());
         }
         if (payload.getType().equals("assignment")) {
-            return this.orderService.updateOrder(orderId, payload.getStatus(), payload.getProvider());
+            Order order = this.orderService.updateOrder(orderId, payload.getStatus(), payload.getProvider());
+            ResponseEntity<Provider> response = restTemplate.exchange("http://provider-service/provider/" + payload.getProvider(), HttpMethod.GET,null,new ParameterizedTypeReference<Provider>(){});
+            Provider provider = response.getBody();
+            CustomerMessage message = new CustomerMessage();
+            message.setMessageId(UUID.randomUUID().toString());
+            message.setBookingUpdate("You order is assigned to expert");
+            message.setProviderEmail(provider.getEmail());
+            message.setProviderName(provider.getName());
+            message.setProviderLocationCode(provider.getLocationCode());
+            message.setProviderType(provider.getType());
+            message.setMessageDate(new Date());
+            templateCustomer.convertAndSend(MQConfig.EXCHANGE,
+                    MQConfig.QUEUE_CUSTOMER,message);
+            return order;
         }
         return new Order();
     }
@@ -67,13 +80,13 @@ public class OrderController {
             ResponseEntity<List<Provider>> response = restTemplate.exchange("http://provider-service/provider/location/" + locationCode, HttpMethod.GET,null,new ParameterizedTypeReference<List<Provider>>(){});
             List<Provider> providers = response.getBody();
             for(Provider nb : providers) {
-                CustomMessage message = new CustomMessage();
+                ProviderMessage message = new ProviderMessage();
                 message.setMessageId(UUID.randomUUID().toString());
                 message.setMessageDate(new Date());
                 message.setProviderId(nb.getProviderId());
                 message.setMessage("Near by job is requested. Please accept or deny");
-                template.convertAndSend(MQConfig.EXCHANGE,
-                        MQConfig.ROUTING_KEY,message);
+                templateProvider.convertAndSend(MQConfig.EXCHANGE,
+                        MQConfig.QUEUE_PROVIDER,message);
             }
             return "Request to provider are send";
         }

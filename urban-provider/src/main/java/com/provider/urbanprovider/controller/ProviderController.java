@@ -3,10 +3,14 @@ package com.provider.urbanprovider.controller;
 import com.provider.urbanprovider.enity.*;
 import com.provider.urbanprovider.service.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/provider")
@@ -43,7 +47,15 @@ public class ProviderController {
             response.setEmail(customerDetails.getEmail());
             response.setName(customerDetails.getName());
             response.setPhone(customerDetails.getPhone());
+            response.setJobDescription(order.getJobDescription());
+            response.setScheduledDate(order.getScheduledDate());
             response.setCurrentAdddress(customerDetails.getCurrentAdddress());
+            Map<String, String> param = new HashMap<String, String>();
+            param.put("type","assignment");
+            param.put("status","assigned");
+            param.put("provider",providerId.toString());
+            HttpEntity<Order> responsePut = restTemplate.exchange("http://admin-service/order/update/" + order.getOrderId(), HttpMethod.PUT, null, Order.class, param);
+            Order orderUpdated = responsePut.getBody();
             return response;
         }
         if (request.getRequest().equals("deny")){

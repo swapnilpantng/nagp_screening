@@ -11,9 +11,12 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CustomMessage {
+public class CustomerMessage {
     private String messageId;
-    private String message;
-    private Integer providerId;
+    private String bookingUpdate;
+    private String providerName;
+    private String providerEmail;
+    private String providerType;
+    private Integer providerLocationCode;
     private Date messageDate;
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageListerner {
 
-    @RabbitListener(queues = MQConfig.QUEUE)
+    @RabbitListener(queues = MQConfig.QUEUE_PROVIDER)
     public void listener(CustomMessage message){
         System.out.println(message);
     }

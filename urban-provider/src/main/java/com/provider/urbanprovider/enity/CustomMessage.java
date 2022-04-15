@@ -16,4 +16,5 @@ public class CustomMessage {
     private String message;
     private Integer providerId;
     private Date messageDate;
+    private Integer orderId;
 }

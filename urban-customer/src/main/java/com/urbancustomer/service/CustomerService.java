@@ -10,4 +10,5 @@ public interface CustomerService {
     public Customer getCustomer(Integer id);
     public List<Address> getCustomerAddress(Integer id);
     public Address getAddress(Integer id);
+    public Customer addCustomer(Customer customer);
 }

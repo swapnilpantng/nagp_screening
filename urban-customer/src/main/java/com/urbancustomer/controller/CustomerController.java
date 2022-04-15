@@ -6,10 +6,7 @@ import com.urbancustomer.entity.Address;
 import com.urbancustomer.service.CustomerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -35,12 +32,8 @@ public class CustomerController {
         return customer;
     }
 
-    @GetMapping("/forProvider/{customerId}")
-    public Customer getCustomerForProvider(@PathVariable("customerId") Integer customerId) {
-        Customer customer = this.customerService.getCustomer(customerId);
-        if(customer.getCustomerId() != null){
-            customer.setCurrentAdddress(this.customerService.getAddress(customer.getCurrentAdddressId()));
-        }
-        return customer;
+    @RequestMapping(method = RequestMethod.POST,value = "/add")
+    public Customer addCustomer(@RequestBody Customer customer){
+        return this.customerService.addCustomer(customer);
     }
 }

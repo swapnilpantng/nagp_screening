@@ -14,7 +14,43 @@ public class Order {
     @JsonFormat(pattern="dd-MM-yyyy")
     private Date scheduledDate;
     private String jobDescription;
+    private String customerName;
+    private String customerPhone;
+    private String customerEmail;
     private Integer providerId;
+    private String customerAdddress;
+
+    public String getCustomerAdddress() {
+        return customerAdddress;
+    }
+
+    public void setCustomerAdddress(String customerAdddress) {
+        this.customerAdddress = customerAdddress;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
 
     public static Date parseDate(String date) {
         try {

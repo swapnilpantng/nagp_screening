@@ -4,7 +4,9 @@ import com.provider.urbanprovider.enity.*;
 import com.provider.urbanprovider.service.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,25 +39,27 @@ public class ProviderController {
         return this.providerService.updateProvider(providerId, provider.getStatus());
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/acceptDeny/{orderId}/{providerId}")
+    @RequestMapping(method = RequestMethod.PUT, value = "/isAccepted/{orderId}/{providerId}")
     public ProviderResponse acceptDenyProviderStatus(@PathVariable("orderId") Integer orderId, @PathVariable("providerId") Integer providerId, @RequestBody JsonRequest request){
         if (request.getRequest().equals("accept")){
             this.providerService.updateProvider(providerId, "not available");
-            Order order = this.restTemplate.getForObject("http://admin-service/order/" + orderId, Order.class);
-            Customer customerDetails = this.restTemplate.getForObject("http://customer-service/customer/forProvider/" + order.getCustomerId(), Customer.class);
-            ProviderResponse response =  new ProviderResponse();
-            response.setEmail(customerDetails.getEmail());
-            response.setName(customerDetails.getName());
-            response.setPhone(customerDetails.getPhone());
-            response.setJobDescription(order.getJobDescription());
-            response.setScheduledDate(order.getScheduledDate());
-            response.setCurrentAdddress(customerDetails.getCurrentAdddress());
+
             Map<String, String> param = new HashMap<String, String>();
             param.put("type","assignment");
             param.put("status","assigned");
             param.put("provider",providerId.toString());
-            HttpEntity<Order> responsePut = restTemplate.exchange("http://admin-service/order/update/" + order.getOrderId(), HttpMethod.PUT, null, Order.class, param);
+
+            HttpHeaders headers = new HttpHeaders();
+            final HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(param);
+            HttpEntity<Order> responsePut = restTemplate.exchange("http://admin-service/order/update/" + orderId, HttpMethod.PUT,  entity , Order.class);
             Order orderUpdated = responsePut.getBody();
+            ProviderResponse response =  new ProviderResponse();
+            response.setEmail(orderUpdated.getCustomerEmail());
+            response.setName(orderUpdated.getCustomerName());
+            response.setPhone(orderUpdated.getCustomerPhone());
+            response.setJobDescription(orderUpdated.getJobDescription());
+            response.setScheduledDate(orderUpdated.getScheduledDate());
+            response.setCurrentAdddress(orderUpdated.getCustomerAdddress());
             return response;
         }
         if (request.getRequest().equals("deny")){

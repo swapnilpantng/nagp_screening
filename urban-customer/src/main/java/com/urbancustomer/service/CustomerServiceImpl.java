@@ -5,6 +5,10 @@ import org.springframework.stereotype.Service;
 
 import com.urbancustomer.entity.Customer;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,11 +16,11 @@ import java.util.stream.Collectors;
 public class CustomerServiceImpl implements CustomerService{
 
     //fake customer
-    List<Customer> list = List.of(
+    List<Customer> list = new ArrayList<Customer>(Arrays.asList(
             new Customer(1,"Swapnil Pant","9022121212", "swapnil@gmail.com", 1),
             new Customer(2,"John snow","80000001222","john@snow.com", 3),
             new Customer(3,"Zoe milton","70000121221","joe@gmail.com", 5)
-    );
+    ));
 
     //fake customer address
     List<Address> addressList= List.of(
@@ -30,6 +34,18 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public Customer getCustomer(Integer id) {
         return this.list.stream().filter(user->user.getCustomerId().equals(id)).findAny().orElse(new Customer());
+    }
+
+    @Override
+    public Customer addCustomer(Customer customer) {
+        Customer last = list.get(list.size() - 1);
+        customer.setCustomerId(last.getCustomerId() + 1);
+        if (this.list.add(customer)){
+            return list.get(list.size() - 1);
+        }
+        else {
+            return new Customer();
+        }
     }
 
     @Override

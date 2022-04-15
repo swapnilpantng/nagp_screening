@@ -40,6 +40,11 @@ public class OrderController {
         return order;
     }
 
+    @GetMapping("/order/orders")
+    public List<Order> getOrders() {
+        return this.orderService.getOrdersList();
+    }
+
     @GetMapping("/order/customer/{customerId}")
     public List<Order> getOrders(@PathVariable("customerId") Integer customerId) {
         return this.orderService.getOrders(customerId);
@@ -84,6 +89,7 @@ public class OrderController {
                 message.setMessageId(UUID.randomUUID().toString());
                 message.setMessageDate(new Date());
                 message.setProviderId(nb.getProviderId());
+                message.setOrderId(orderId);
                 message.setMessage("Near by job is requested. Please accept or deny");
                 templateProvider.convertAndSend(MQConfig.EXCHANGE,
                         MQConfig.QUEUE_PROVIDER,message);

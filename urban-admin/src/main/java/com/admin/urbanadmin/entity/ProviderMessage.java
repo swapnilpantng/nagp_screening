@@ -15,5 +15,6 @@ public class ProviderMessage {
     private String messageId;
     private String message;
     private Integer providerId;
+    private Integer orderId;
     private Date messageDate;
 }

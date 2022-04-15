@@ -10,7 +10,7 @@ public class Customer {
     private String phone;
     private String email;
     private Integer currentAdddressId;
-    private Address currentAdddress;
+    private String currentAdddress;
 
     public void setCurrentAdddressId(Integer currentAdddressId) {
         this.currentAdddressId = currentAdddressId;
@@ -48,11 +48,11 @@ public class Customer {
         return currentAdddressId;
     }
 
-    public Address getCurrentAdddress() {
+    public String getCurrentAdddress() {
         return currentAdddress;
     }
 
-    public void setCurrentAdddress(Address currentAdddress) {
+    public void setCurrentAdddress(String currentAdddress) {
         this.currentAdddress = currentAdddress;
     }
 

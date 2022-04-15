@@ -19,6 +19,7 @@ public class ProviderResponse {
     @JsonFormat(pattern="dd-MM-yyyy")
     private Date scheduledDate;
     private String jobDescription;
+    private String currentAdddress;
 
     public Date getScheduledDate() {
         return scheduledDate;
@@ -35,8 +36,6 @@ public class ProviderResponse {
     public void setJobDescription(String jobDescription) {
         this.jobDescription = jobDescription;
     }
-
-    private Address currentAdddress;
 
     public String getName() {
         return name;
@@ -62,11 +61,11 @@ public class ProviderResponse {
         this.email = email;
     }
 
-    public Address getCurrentAdddress() {
+    public String getCurrentAdddress() {
         return currentAdddress;
     }
 
-    public void setCurrentAdddress(Address currentAdddress) {
+    public void setCurrentAdddress(String currentAdddress) {
         this.currentAdddress = currentAdddress;
     }
 }

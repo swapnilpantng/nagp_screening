@@ -43,6 +43,11 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    public List<Order> getOrdersList() {
+        return this.list.stream().collect(Collectors.toList());
+    }
+
+    @Override
     public Order saveOrder(Order order) {
         Order last = list.get(list.size() - 1);
         order.setOrderId(last.getOrderId() + 1);

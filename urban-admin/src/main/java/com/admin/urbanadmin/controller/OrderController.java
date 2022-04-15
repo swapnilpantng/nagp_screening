@@ -6,14 +6,14 @@ import com.admin.urbanadmin.service.OrderService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 public class OrderController {
@@ -52,6 +52,18 @@ public class OrderController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/order/placeOrder")
     public Order createOrder(@RequestBody Order order){
+        if (order.getCustomerId() == null){
+            Map<String, String> param = new HashMap<String, String>();
+            param.put("name",order.getCustomerName());
+            param.put("phone",order.getCustomerPhone());
+            param.put("email",order.getCustomerEmail());
+            param.put("currentAdddress",order.getCustomerAdddress());
+            HttpHeaders headers = new HttpHeaders();
+            final HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(param);
+            HttpEntity<Customer> responsePost = this.restTemplate.exchange("http://customer-service/customer/add", HttpMethod.POST,entity, Customer.class);
+            Customer newCustomer = responsePost.getBody();
+            order.setCustomerId(newCustomer.getCustomerId());
+        }
         return this.orderService.saveOrder(order);
     }
 
@@ -62,8 +74,7 @@ public class OrderController {
         }
         if (payload.getType().equals("assignment")) {
             Order order = this.orderService.updateOrder(orderId, payload.getStatus(), payload.getProvider());
-            ResponseEntity<Provider> response = restTemplate.exchange("http://provider-service/provider/" + payload.getProvider(), HttpMethod.GET,null,new ParameterizedTypeReference<Provider>(){});
-            Provider provider = response.getBody();
+            Provider provider = this.restTemplate.getForObject("http://provider-service/provider/" + order.getProviderId(), Provider.class);
             CustomerMessage message = new CustomerMessage();
             message.setMessageId(UUID.randomUUID().toString());
             message.setBookingUpdate("You order is assigned to expert");
@@ -82,6 +93,7 @@ public class OrderController {
     @PostMapping("/requestProviders/{orderId}/{locationCode}")
     public String requestProviderForOrder(@PathVariable("orderId") Integer orderId,@PathVariable("locationCode") Integer locationCode) {
         if (locationCode != null) {
+            Order order = this.orderService.getOrder(orderId);
             ResponseEntity<List<Provider>> response = restTemplate.exchange("http://provider-service/provider/location/" + locationCode, HttpMethod.GET,null,new ParameterizedTypeReference<List<Provider>>(){});
             List<Provider> providers = response.getBody();
             for(Provider nb : providers) {
@@ -90,6 +102,7 @@ public class OrderController {
                 message.setMessageDate(new Date());
                 message.setProviderId(nb.getProviderId());
                 message.setOrderId(orderId);
+                message.setScheduledDate(order.getScheduledDate());
                 message.setMessage("Near by job is requested. Please accept or deny");
                 templateProvider.convertAndSend(MQConfig.EXCHANGE,
                         MQConfig.QUEUE_PROVIDER,message);

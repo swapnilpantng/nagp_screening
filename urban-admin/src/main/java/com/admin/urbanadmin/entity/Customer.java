@@ -1,15 +1,15 @@
-package com.provider.urbanprovider.enity;
+package com.admin.urbanadmin.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Customer {
-
     private Integer customerId;
     private String name;
     private String phone;
     private String email;
     private Integer locationCode;
+    private String currentAdddress;
 
     public void setlocationCode(Integer locationCode) {
         this.locationCode = locationCode;
@@ -34,6 +34,15 @@ public class Customer {
         this.locationCode = locationCode;
     }
 
+    public Customer(Integer customerId, String name, String phone, String email,Integer locationCode, String currentAdddress) {
+        this.customerId = customerId;
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.locationCode = locationCode;
+        this.currentAdddress = currentAdddress;
+    }
+
     public Customer() {
     }
 
@@ -43,6 +52,14 @@ public class Customer {
 
     public Integer getlocationCode() {
         return locationCode;
+    }
+
+    public String getCurrentAdddress() {
+        return currentAdddress;
+    }
+
+    public void setCurrentAdddress(String currentAdddress) {
+        this.currentAdddress = currentAdddress;
     }
 
     public void setCustomerId(Integer customerId) {

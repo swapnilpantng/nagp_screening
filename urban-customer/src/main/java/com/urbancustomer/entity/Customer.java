@@ -9,32 +9,39 @@ public class Customer {
     private String name;
     private String phone;
     private String email;
-    private Integer currentAdddressId;
+    private Integer locationCode;
     private String currentAdddress;
 
-    public void setCurrentAdddressId(Integer currentAdddressId) {
-        this.currentAdddressId = currentAdddressId;
+    public void setlocationCode(Integer locationCode) {
+        this.locationCode = locationCode;
     }
 
-    List<Address> addresses = new ArrayList<>();
     List<Order> orders = new ArrayList<>();
 
-    public Customer(Integer customerId, String name, String phone, String email,Integer currentAdddressId, List<Address> addresses, List<Order> orders) {
+    public Customer(Integer customerId, String name, String phone, String email,Integer locationCode, List<Order> orders) {
         this.customerId = customerId;
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.currentAdddressId = currentAdddressId;
-        this.addresses = addresses;
+        this.locationCode = locationCode;
         this.orders = orders;
     }
 
-    public Customer(Integer customerId, String name, String phone, String email,Integer currentAdddressId) {
+    public Customer(Integer customerId, String name, String phone, String email,Integer locationCode) {
         this.customerId = customerId;
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.currentAdddressId = currentAdddressId;
+        this.locationCode = locationCode;
+    }
+
+    public Customer(Integer customerId, String name, String phone, String email,Integer locationCode, String currentAdddress) {
+        this.customerId = customerId;
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.locationCode = locationCode;
+        this.currentAdddress = currentAdddress;
     }
 
     public Customer() {
@@ -44,8 +51,8 @@ public class Customer {
         return customerId;
     }
 
-    public Integer getCurrentAdddressId() {
-        return currentAdddressId;
+    public Integer getlocationCode() {
+        return locationCode;
     }
 
     public String getCurrentAdddress() {
@@ -74,14 +81,6 @@ public class Customer {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
     }
 
     public List<Order> getOrders() {

@@ -11,13 +11,14 @@ public class Order {
     private Integer customerId;
     private String orderStatus;
     private String professionalType;
-    @JsonFormat(pattern="dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date scheduledDate;
     private String jobDescription;
     private String customerName;
     private String customerPhone;
     private String customerEmail;
     private Integer providerId;
+    private Integer locationcode;
     private String customerAdddress;
 
     public String getCustomerAdddress() {
@@ -79,17 +80,19 @@ public class Order {
         return orderId;
     }
 
-    public Order(Integer customerId, String orderStatus, String professionalType, String scheduledDate, String jobDescription) {
+    public Order(Integer customerId, String orderStatus, String professionalType, String scheduledDate,
+            String jobDescription) {
         this.customerId = customerId;
         this.orderStatus = orderStatus;
         this.professionalType = professionalType;
         this.scheduledDate = parseDate(scheduledDate);
         this.jobDescription = jobDescription;
-        this.createdDate = Date.from( Instant.now());
-        this.updatedDate = Date.from( Instant.now());
+        this.createdDate = Date.from(Instant.now());
+        this.updatedDate = Date.from(Instant.now());
     }
 
-    public Order(Integer orderId, Integer customerId, String orderStatus, String professionalType, Date scheduledDate, String jobDescription, Integer providerId, Provider provider, Date createdDate) {
+    public Order(Integer orderId, Integer customerId, String orderStatus, String professionalType, Date scheduledDate,
+            String jobDescription, Integer providerId, Provider provider, Date createdDate) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.orderStatus = orderStatus;
@@ -99,10 +102,11 @@ public class Order {
         this.providerId = providerId;
         this.provider = provider;
         this.createdDate = createdDate;
-        this.updatedDate = Date.from( Instant.now());
+        this.updatedDate = Date.from(Instant.now());
     }
 
-    public Order(Integer orderId, Integer customerId, String orderStatus, String professionalType, Date scheduledDate, String jobDescription, Date createdDate) {
+    public Order(Integer orderId, Integer customerId, String orderStatus, String professionalType, Date scheduledDate,
+            String jobDescription, Date createdDate) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.orderStatus = orderStatus;
@@ -110,7 +114,7 @@ public class Order {
         this.scheduledDate = scheduledDate;
         this.jobDescription = jobDescription;
         this.createdDate = createdDate;
-        this.updatedDate = Date.from( Instant.now());
+        this.updatedDate = Date.from(Instant.now());
     }
 
     public void setOrderId(Integer orderId) {
@@ -173,7 +177,8 @@ public class Order {
         this.updatedDate = updatedDate;
     }
 
-    public Order(Integer orderId, Integer customerId, String orderStatus, String professionalType, Date scheduledDate, String jobDescription, Date createdDate, Date updatedDate) {
+    public Order(Integer orderId, Integer customerId, String orderStatus, String professionalType, Date scheduledDate,
+            String jobDescription, Date createdDate, Date updatedDate) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.orderStatus = orderStatus;
@@ -190,5 +195,13 @@ public class Order {
 
     public void setProviderId(Integer providerId) {
         this.providerId = providerId;
+    }
+
+    public Integer getLocationcode() {
+        return locationcode;
+    }
+
+    public void setLocationcode(Integer locationcode) {
+        this.locationcode = locationcode;
     }
 }

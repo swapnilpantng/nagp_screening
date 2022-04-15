@@ -39,19 +39,19 @@ public class ProviderController {
         return this.providerService.updateProvider(providerId, provider.getStatus());
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/isAccepted/{orderId}/{providerId}")
-    public ProviderResponse acceptDenyProviderStatus(@PathVariable("orderId") Integer orderId, @PathVariable("providerId") Integer providerId, @RequestBody JsonRequest request){
+    @RequestMapping(method = RequestMethod.PUT, value = "/isAccepted")
+    public ProviderResponse acceptDenyProviderStatus(@RequestBody JsonRequest request){
         if (request.getRequest().equals("accept")){
-            this.providerService.updateProvider(providerId, "not available");
+            this.providerService.updateProvider(request.getProviderId(), "not available");
 
             Map<String, String> param = new HashMap<String, String>();
             param.put("type","assignment");
             param.put("status","assigned");
-            param.put("provider",providerId.toString());
+            param.put("provider",request.getProviderId().toString());
 
             HttpHeaders headers = new HttpHeaders();
             final HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(param);
-            HttpEntity<Order> responsePut = restTemplate.exchange("http://admin-service/order/update/" + orderId, HttpMethod.PUT,  entity , Order.class);
+            HttpEntity<Order> responsePut = restTemplate.exchange("http://admin-service/order/update/" + request.getOrderId(), HttpMethod.PUT,  entity , Order.class);
             Order orderUpdated = responsePut.getBody();
             ProviderResponse response =  new ProviderResponse();
             response.setEmail(orderUpdated.getCustomerEmail());
@@ -63,7 +63,7 @@ public class ProviderController {
             return response;
         }
         if (request.getRequest().equals("deny")){
-            this.providerService.updateProvider(providerId, "available");
+            this.providerService.updateProvider(request.getProviderId(), "available");
             return null;
         }
         return null;

@@ -7,22 +7,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService{
-    List<Order> list = new ArrayList<Order>(Arrays.asList(
-            new Order(1,1,"created","electrician", parseDate("16-5-2022"),"fan fitting", parseDate("10-5-2022")),
-            new Order(2,1,"assigned","Yoga",parseDate("16-5-2022"),"Yoga class", parseDate("10-5-2022")),
-            new Order(3,2,"complete","AC",parseDate("16-5-2022"),"repair", parseDate("10-5-2022")),
-            new Order(4,2,"accepted","AC",parseDate("16-5-2022"),"maintenance", parseDate("10-5-2022")),
-            new Order(5,2,"created","TV",parseDate("16-5-2022"),"repair", parseDate("10-5-2022")),
-            new Order(6,3,"complete","Salon",parseDate("16-5-2022"),"grooming and facial", parseDate("10-5-2022")),
-            new Order(7,3,"assigned","Kitchen",parseDate("16-5-2022"),"stove repair", parseDate("10-5-2022"))
-        ));
+    List<Order> list = new ArrayList<Order>();
 
     public static Date parseDate(String date) {
         try {
@@ -49,8 +40,12 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public Order saveOrder(Order order) {
-        Order last = list.get(list.size() - 1);
-        order.setOrderId(last.getOrderId() + 1);
+        Integer newId = 1;
+        if(list.size() != 0) {
+            Order last = list.get(list.size() - 1);
+            newId = last.getOrderId() + 1;
+        }
+        order.setOrderId(newId);
         order.setCreatedDate(Date.from( Instant.now()));
         order.setUpdatedDate(Date.from( Instant.now()));
         if (this.list.add(order)){

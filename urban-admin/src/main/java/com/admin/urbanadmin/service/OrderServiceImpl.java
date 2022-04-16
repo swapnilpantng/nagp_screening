@@ -2,6 +2,14 @@ package com.admin.urbanadmin.service;
 
 import com.admin.urbanadmin.entity.Order;
 import org.springframework.stereotype.Service;
+import com.admin.urbanadmin.entity.Provider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpHeaders;
+import org.springframework.core.ParameterizedTypeReference;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,6 +21,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService{
+    @Autowired
+    private RestTemplate restTemplate;
+
     List<Order> list = new ArrayList<Order>();
 
     public static Date parseDate(String date) {
@@ -73,5 +84,32 @@ public class OrderServiceImpl implements OrderService{
             currentOrder.setProviderId(providerId);
         }
         return currentOrder;
+    }
+
+    @Override
+    @CircuitBreaker(name = "getProvider", fallbackMethod = "getProviderFallback")
+    public Provider getProvider(Integer providerId){
+        if (providerId != null){
+           return this.restTemplate.getForObject("http://provider-service/provider/" + providerId, Provider.class);
+        }
+        return null;
+    }
+
+    @Override
+    @CircuitBreaker(name = "getProviderByLocationCode", fallbackMethod = "getProviderByLocationCodeFallback")
+    public List<Provider> getProviderByLocationCode(Integer locationCode){
+        if (locationCode != null){
+            ResponseEntity<List<Provider>> response = this.restTemplate.exchange("http://provider-service/provider/location/" + locationCode, HttpMethod.GET,null,new ParameterizedTypeReference<List<Provider>>(){});
+            return response.getBody();
+        }
+        return null;
+    }
+
+    public Provider getProviderFallback(Exception e){
+        return new Provider();
+    }
+
+    public List<Provider> getProviderByLocationCodeFallback(Exception e){
+        return null;
     }
 }

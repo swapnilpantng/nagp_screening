@@ -34,8 +34,7 @@ public class OrderController {
     public Order getOrder(@PathVariable("orderId") Integer orderId) {
         Order order = this.orderService.getOrder(orderId);
         if (order.getOrderId() != null && order.getProviderId() != null) {
-            Provider provider = this.restTemplate.getForObject("http://provider-service/provider/" + order.getProviderId(), Provider.class);
-            order.setProvider(provider);
+            order.setProvider(this.orderService.getProvider(order.getProviderId()));
         }
         return order;
     }
@@ -58,7 +57,6 @@ public class OrderController {
             param.put("phone",order.getCustomerPhone());
             param.put("email",order.getCustomerEmail());
             param.put("currentAdddress",order.getCustomerAdddress());
-            HttpHeaders headers = new HttpHeaders();
             final HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(param);
             HttpEntity<Customer> responsePost = this.restTemplate.exchange("http://customer-service/customer/add", HttpMethod.POST,entity, Customer.class);
             Customer newCustomer = responsePost.getBody();
@@ -94,8 +92,10 @@ public class OrderController {
     public String requestProviderForOrder(@PathVariable("orderId") Integer orderId,@PathVariable("locationCode") Integer locationCode) {
         if (locationCode != null) {
             Order order = this.orderService.getOrder(orderId);
-            ResponseEntity<List<Provider>> response = restTemplate.exchange("http://provider-service/provider/location/" + locationCode, HttpMethod.GET,null,new ParameterizedTypeReference<List<Provider>>(){});
-            List<Provider> providers = response.getBody();
+            List<Provider> providers = this.orderService.getProviderByLocationCode(locationCode);
+            if (providers == null) {
+                return "Can't get providers, Please again later";
+            }
             for(Provider nb : providers) {
                 ProviderMessage message = new ProviderMessage();
                 message.setMessageId(UUID.randomUUID().toString());

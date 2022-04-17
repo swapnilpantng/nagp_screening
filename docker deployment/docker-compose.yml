@@ -1,0 +1,84 @@
+version: '3'
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - spring-cloud-urban-network
+  urban-eurekaserver:
+    container_name: urban-eurekaserver
+    image: swapnilpant/urban-eurekaserver:latest
+    ports:
+      - "8761:8761"
+    expose:
+      - "8761"
+    networks:
+      - spring-cloud-urban-network
+  urban-apigateway:
+    container_name: urban-apigateway
+    image: swapnilpant/urban-apigateway:latest
+    ports:
+      - "8999:8999"
+    expose:
+      - "8999"
+    networks:
+      - spring-cloud-urban-network
+    external_links:
+      - urban-eurekaserver
+    links:
+      - urban-eurekaserver
+  urban-customer:
+    container_name: urban-customer
+    image: swapnilpant/urban-customer:latest
+    ports:
+      - "9001:9001"
+    expose:
+      - "9001"
+    networks:
+      - spring-cloud-urban-network
+    external_links:
+      - urban-apigateway
+      - rabbitmq
+      - urban-eurekaserver
+      - urban-admin
+    links:
+      - urban-eurekaserver
+  urban-admin:
+    container_name: urban-admin
+    image: swapnilpant/urban-admin:latest
+    ports:
+      - "9002:9002"
+    expose:
+      - "9002"
+    networks:
+      - spring-cloud-urban-network
+    external_links:
+      - urban-apigateway
+      - rabbitmq
+      - urban-eurekaserver
+      - urban-customer
+      - urban-provider
+    links:
+      - urban-eurekaserver
+  urban-provider:
+    container_name: urban-provider
+    image: swapnilpant/urban-provider:latest
+    ports:
+      - "9004:9004"
+    expose:
+      - "9004"
+    networks:
+      - spring-cloud-urban-network
+    external_links:
+      - urban-apigateway
+      - rabbitmq
+      - urban-eurekaserver
+      - urban-admin
+    links:
+      - urban-eurekaserver
+networks:
+  spring-cloud-urban-network:
+    driver: bridge

@@ -1,6 +1,5 @@
 server:
   port: 8761
-
 eureka:
   client:
     registerWithEureka: false
@@ -8,4 +7,4 @@ eureka:
   server:
     waitTimeInMsWhenSyncEmpty: 0
   instance:
-    hostname: localhost
+    hostname: urban-eurekaserver

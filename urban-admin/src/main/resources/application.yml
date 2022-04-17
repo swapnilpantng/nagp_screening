@@ -2,12 +2,15 @@ server:
   port: 9002
 spring:
   rabbitmq:
-    addresses: localhost:5672
+    addresses: rabbitmq
   application:
     name: admin-service
 eureka:
+  client:
+    service-url:
+      defaultZone: http://urban-eurekaserver:8761/eureka
   instance:
-    hostname: localhost
+    hostname: urban-admin
 management:
   health:
     circuitbreakers:

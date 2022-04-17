@@ -3,9 +3,14 @@ server:
 spring:
   application:
     name: customer-service
+  rabbitmq:
+    host: rabbitmq
 eureka:
+  client:
+    service-url:
+      defaultZone: http://urban-eurekaserver:8761/eureka
   instance:
-    hostname: localhost
+    hostname: urban-customer
 management:
   health:
     circuitbreakers:

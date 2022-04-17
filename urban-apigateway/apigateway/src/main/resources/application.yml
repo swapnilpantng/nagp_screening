@@ -1,8 +1,11 @@
 server:
   port: 8999
 eureka:
+  client:
+    service-url:
+      defaultZone: http://urban-eurekaserver:8761/eureka
   instance:
-    hostname: localhost
+    hostname: urban-apigateway
 spring:
   application:
     name: api-gateway

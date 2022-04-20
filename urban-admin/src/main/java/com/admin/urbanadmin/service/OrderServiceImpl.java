@@ -1,5 +1,6 @@
 package com.admin.urbanadmin.service;
 
+import com.admin.urbanadmin.entity.Customer;
 import com.admin.urbanadmin.entity.Order;
 import org.springframework.stereotype.Service;
 import com.admin.urbanadmin.entity.Provider;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpHeaders;
 import org.springframework.core.ParameterizedTypeReference;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpEntity;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService{
@@ -97,6 +101,7 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     @CircuitBreaker(name = "getProviderByLocationCode", fallbackMethod = "getProviderByLocationCodeFallback")
+    @Retry(name = "getProviderByLocationCode")
     public List<Provider> getProviderByLocationCode(Integer locationCode){
         if (locationCode != null){
             ResponseEntity<List<Provider>> response = this.restTemplate.exchange("http://provider-service/provider/location/" + locationCode, HttpMethod.GET,null,new ParameterizedTypeReference<List<Provider>>(){});
@@ -105,8 +110,19 @@ public class OrderServiceImpl implements OrderService{
         return null;
     }
 
+    @Override
+    @CircuitBreaker(name = "addCustomer", fallbackMethod = "getAddCustomer")
+    public Customer addCustomer(HttpEntity<Map<String, String>> entity){
+        HttpEntity<Customer> responsePost = this.restTemplate.exchange("http://customer-service/customer/add", HttpMethod.POST,entity, Customer.class);
+        return responsePost.getBody();
+    }
+
     public Provider getProviderFallback(Exception e){
         return new Provider();
+    }
+
+    public Customer getAddCustomer(Exception e){
+        return new Customer();
     }
 
     public List<Provider> getProviderByLocationCodeFallback(Exception e){

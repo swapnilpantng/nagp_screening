@@ -1,8 +1,11 @@
 package com.admin.urbanadmin.service;
 
+import com.admin.urbanadmin.entity.Customer;
 import com.admin.urbanadmin.entity.Order;
 import com.admin.urbanadmin.entity.Provider;
 
+import org.springframework.http.HttpEntity;
+import java.util.Map;
 import java.util.List;
 
 public interface OrderService {
@@ -15,4 +18,5 @@ public interface OrderService {
     Order updateOrder(Integer orderId, String orderStatus, Integer providerId);
     Provider getProvider(Integer providerId);
     List<Provider> getProviderByLocationCode(Integer locationCode);
+    Customer addCustomer(HttpEntity<Map<String, String>> entity);
 }

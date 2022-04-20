@@ -6,9 +6,7 @@ import com.admin.urbanadmin.service.OrderService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -17,9 +15,6 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     @Autowired
     private RabbitTemplate templateProvider;
@@ -55,8 +50,7 @@ public class OrderController {
             param.put("email",order.getCustomerEmail());
             param.put("currentAdddress",order.getCustomerAdddress());
             final HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(param);
-            HttpEntity<Customer> responsePost = this.restTemplate.exchange("http://customer-service/customer/add", HttpMethod.POST,entity, Customer.class);
-            Customer newCustomer = responsePost.getBody();
+            Customer newCustomer = this.orderService.addCustomer(entity);
             order.setCustomerId(newCustomer.getCustomerId());
         }
         return this.orderService.saveOrder(order);
@@ -69,7 +63,7 @@ public class OrderController {
         }
         if (payload.getType().equals("assignment")) {
             Order order = this.orderService.updateOrder(orderId, payload.getStatus(), payload.getProvider());
-            Provider provider = this.restTemplate.getForObject("http://provider-service/provider/" + order.getProviderId(), Provider.class);
+            Provider provider = this.orderService.getProvider(order.getProviderId());
             CustomerMessage message = new CustomerMessage();
             message.setMessageId(UUID.randomUUID().toString());
             message.setBookingUpdate("You order is assigned to expert");

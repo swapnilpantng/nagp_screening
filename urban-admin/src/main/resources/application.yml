@@ -45,3 +45,23 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         sliding-window-size: 10
         sliding-window-type: COUNT_BASED
+      addCustomer:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: COUNT_BASED
+  retry:
+    instances:
+      getProvider:
+        register-health-indicator: true
+        max-retry-attempts: 5
+        wait-duration: 5s
+      getProviderByLocationCode:
+        register-health-indicator: true
+        max-retry-attempts: 5
+        wait-duration: 5s

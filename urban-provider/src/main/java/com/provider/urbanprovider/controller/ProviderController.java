@@ -4,9 +4,7 @@ import com.provider.urbanprovider.enity.*;
 import com.provider.urbanprovider.service.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,16 +41,10 @@ public class ProviderController {
     public ProviderResponse acceptDenyProviderStatus(@RequestBody JsonRequest request){
         if (request.getRequest().equals("accept")){
             this.providerService.updateProvider(request.getProviderId(), "not available");
-
-            Map<String, String> param = new HashMap<String, String>();
-            param.put("type","assignment");
-            param.put("status","assigned");
-            param.put("provider",request.getProviderId().toString());
-
-            HttpHeaders headers = new HttpHeaders();
-            final HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(param);
-            HttpEntity<Order> responsePut = restTemplate.exchange("http://admin-service/order/update/" + request.getOrderId(), HttpMethod.PUT,  entity , Order.class);
-            Order orderUpdated = responsePut.getBody();
+            Order orderUpdated = this.providerService.updateOrder(request.getOrderId(), request.getProviderId());
+            if (orderUpdated.getOrderId() == null){
+                return null;
+            }
             ProviderResponse response =  new ProviderResponse();
             response.setEmail(orderUpdated.getCustomerEmail());
             response.setName(orderUpdated.getCustomerName());

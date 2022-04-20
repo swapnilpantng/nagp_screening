@@ -1,9 +1,19 @@
 package com.provider.urbanprovider.service;
 
+import com.provider.urbanprovider.enity.Order;
 import com.provider.urbanprovider.enity.Provider;
-import org.springframework.stereotype.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +29,10 @@ public class ProviderServiceImpl implements ProviderService {
             new Provider(4,"piyush","piyush@gmail.com","salon",20,"available"),
             new Provider(4,"lokesh","lokesh@gmail.com","salon",10,"available")
     );
+
+    @Autowired
+    private RestTemplate restTemplate;
+    
     @Override
     public Provider getProvider(Integer id) {
         return this.list.stream().filter(provider -> provider.getProviderId().equals(id)).findAny().orElse(new Provider());
@@ -36,5 +50,23 @@ public class ProviderServiceImpl implements ProviderService {
         return this.list.stream().
                 filter(provider -> provider.getLocationCode().equals(locationCode) && provider.getStatus().equals("available"))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @CircuitBreaker(name = "updateOrder", fallbackMethod = "getUpdateOrderFallback")
+    public Order updateOrder(Integer orderId, Integer providerId){
+        Map<String, String> param = new HashMap<String, String>();
+        param.put("type","assignment");
+        param.put("status","assigned");
+        param.put("provider",providerId.toString());
+
+        final HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(param);
+        HttpEntity<Order> responsePut = restTemplate.exchange("http://admin-service/order/update/" + orderId, HttpMethod.PUT,  entity , Order.class);
+        Order orderUpdated = responsePut.getBody();
+        return orderUpdated;
+    }
+
+    public Order getUpdateOrderFallback(Exception e){
+        return new Order();
     }
 }
